@@ -1,144 +1,123 @@
-# Write your code here
 from math import floor
 
-water_in_machine = 400
-milk_in_machine = 540
-coffee_beans_in_machine = 120
-cups_of_coffee = 9
-money = 550
 
-maximum_cups = floor(min(water_in_machine / 200, milk_in_machine / 50, coffee_beans_in_machine / 15))
+class Machine:
+    water = 400
+    milk = 540
+    beans = 120
+    cups = 9
+    money = 550
+    espresso_availability = 0
+    latte_availability = 0
+    cappuccino_availability = 0
 
+    def __init__(self):
+        pass
 
-def remaining():
-    print(f"""
-The coffee machine has:
-{water_in_machine} of water
-{milk_in_machine} of milk
-{coffee_beans_in_machine} of coffee beans
-{cups_of_coffee} of disposable cups
-{money} of money
-""")
-
-
-def fill_machine():
-    global water_in_machine
-    global milk_in_machine
-    global coffee_beans_in_machine
-    global cups_of_coffee
-    global money
-
-    print("Write how many ml of water do you want to add:")
-    water = int(input())
-    water_in_machine += water
-    print("Write how many ml of milk do you want to add:")
-    milk = int(input())
-    milk_in_machine += milk
-    print("Write how many grams of coffee beans do you want to add:")
-    coffee = int(input())
-    coffee_beans_in_machine += coffee
-    print("Write how many disposable cups of coffee do you want to add:")
-    cups = int(input())
-    cups_of_coffee += cups
-
-
-def resources(coffee):
-    if coffee == 'espresso':
-        if water_in_machine < 250:
-            print("Sorry, not enough water!")
-            return False
-        elif coffee_beans_in_machine < 16:
-            print("Sorry, not enough coffee beans!")
-            return False
-        elif cups_of_coffee <= 0:
+    def check_ingredients(self, coffee_kind):
+        if self.cups < 1:
             print("Sorry, not enough cups!")
             return False
-        else:
-            print("I have enough resources, making you a coffee!")
-            return True
-    elif coffee == 'cappuccino':
-        if water_in_machine < 350:
-            print("Sorry, not enough water!")
-            return False
-        elif milk_in_machine < 75:
-            print("Sorry, not enough milk!")
-            return False
-        elif coffee_beans_in_machine < 20:
-            print("Sorry, not enough coffee beans!")
-            return False
-        elif cups_of_coffee <= 0:
-            print("Sorry, not enough cups!")
-            return False
-        else:
-            print("I have enough resources, making you a coffee!")
-            return True
-    elif coffee == 'latte':
-        if water_in_machine < 200:
-            print("Sorry, not enough water!")
-            return False
-        elif milk_in_machine < 100:
-            print("Sorry, not enough milk!")
-            return False
-        elif coffee_beans_in_machine < 12:
-            print("Sorry, not enough coffee beans!")
-            return False
-        elif cups_of_coffee <= 0:
-            print("Sorry, not enough cups!")
-            return False
-        else:
-            print("I have enough resources, making you a coffee!")
-            return True
+
+        if coffee_kind == 'espresso':
+            if self.water < 250:
+                print("Sorry, not enough water!")
+                return False
+            elif self.beans < 16:
+                print("Sorry, not enough coffee beans")
+                return False
+        elif coffee_kind == 'latte':
+            if self.water < 350:
+                print("Sorry, not enough water!")
+                return False
+            elif self.milk < 75:
+                print("Sorry, not enough milk!")
+                return False
+            elif self.beans < 20:
+                print("Sorry, not enough coffee beans")
+                return False
+        elif coffee_kind == 'cappuccino':
+            if self.water < 200:
+                print("Sorry, not enough water!")
+                return False
+            elif self.milk < 75:
+                print("Sorry, not enough milk!")
+                return False
+            elif self.beans < 12:
+                print("Sorry, not enough coffee beans")
+                return False
+
+        return True
+
+    def availability(self):
+        self.espresso_availability = min(floor(self.water / 250), floor(self.beans / 16), self.cups)
+        self.latte_availability = min(floor(self.water / 350), floor(self.milk / 75), floor(self.beans / 20), self.cups)
+        self.cappuccino_availability = min(floor(self.water / 200), floor(self.milk / 75), floor(self.beans / 12), self.cups)
+
+    def buy_coffee(self):
+        selection = input("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:")
+        if selection == '1':
+            if self.check_ingredients('espresso'):
+                print("I have enough resources, making you a coffee!")
+                self.water -= 250
+                self.beans -= 16
+                self.money += 4
+                self.cups -= 1
+        elif selection == '2':
+            if self.check_ingredients('latte'):
+                print("I have enough resources, making you a coffee!")
+                self.water -= 350
+                self.milk -= 75
+                self.beans -= 20
+                self.money += 7
+                self.cups -= 1
+        elif selection == '3':
+            if self.check_ingredients('cappuccino'):
+                print("I have enough resources, making you a coffee!")
+                self.water -= 200
+                self.milk -= 100
+                self.beans -= 12
+                self.money += 6
+                self.cups -= 1
+        print()
+
+    def fill_machine(self):
+        self.water += int(input("Write how many ml of water do you want to add:"))
+        self.milk += int(input("Write how many ml of milk do you want to add:"))
+        self.beans += int(input("Write how many grams of coffee beans do you want to add:"))
+        self.cups += int(input("Write how many disposable cups of coffee do you want to add:"))
+        print()
+
+    def take_money(self):
+        print(f"I gave you ${self.money}")
+        print()
+        self.money = 0
+
+    def print_states(self):
+        print(f"""The coffee machine has:
+        {self.water} of water
+        {self.milk} of milk
+        {self.beans} of coffee beans
+        {self.cups} of disposable cups
+        {self.money} of money
+        Enough to make -- espresso: {self.espresso_availability} -- latte: {self.latte_availability} -- cappuccino: {self.cappuccino_availability}""")
 
 
-def buy_coffee():
-    global water_in_machine
-    global milk_in_machine
-    global coffee_beans_in_machine
-    global cups_of_coffee
-    global money
-
-    print("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:")
-    type_coffee = input()
-    if type_coffee == '1':
-        if resources('espresso'):
-            water_in_machine -= 250
-            coffee_beans_in_machine -= 16
-            money += 4
-            cups_of_coffee -= 1
-    elif type_coffee == '2':
-        if resources('cappuccino'):
-            water_in_machine -= 350
-            milk_in_machine -= 75
-            coffee_beans_in_machine -= 20
-            money += 7
-            cups_of_coffee -= 1
-    elif type_coffee == '3':
-        if resources('latte'):
-            water_in_machine -= 200
-            milk_in_machine -= 100
-            coffee_beans_in_machine -= 12
-            money += 6
-            cups_of_coffee -= 1
-    elif type_coffee == 'back':
-        return 0
+def action(machine, selection):
+    if selection == 'buy':
+        machine.buy_coffee()
+    elif selection == 'fill':
+        machine.fill_machine()
+    elif selection == 'take':
+        machine.take_money()
+    elif selection == 'remaining':
+        machine.availability()
+        machine.print_states()
 
 
-def take_money():
-    global money
-    print("I gave you", money)
-    money = 0
-
-
-while 1:
-    print("What action (buy, fill, take, remaining, exit):")
-    action = input()
-    if action == 'buy':
-        buy_coffee()
-    elif action == 'fill':
-        fill_machine()
-    elif action == 'take':
-        take_money()
-    elif action == 'remaining':
-        remaining()
-    elif action == 'exit':
-        break
+m = Machine()
+selection = input("Write action (buy, fill, take, remaining, exit):")
+while selection != 'exit':
+    print()
+    action(m, selection)
+    selection = input("Write action (buy, fill, take, remaining, exit):")
